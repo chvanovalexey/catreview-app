@@ -7,8 +7,13 @@ interface AuthState {
   checkAuth: () => void
 }
 
-const CORRECT_PASSWORD = 'dixicatreview'
+// Пароль из переменных окружения (для Vite нужен префикс VITE_)
+const CORRECT_PASSWORD = import.meta.env.VITE_APP_PASSWORD
 const AUTH_STORAGE_KEY = 'catreview-auth'
+
+if (!CORRECT_PASSWORD) {
+  throw new Error('VITE_APP_PASSWORD не установлен в переменных окружения')
+}
 
 // Проверяем сохраненную авторизацию при загрузке
 const getStoredAuth = (): boolean => {
