@@ -1,6 +1,6 @@
 import { Bot, FileText, Sparkles } from 'lucide-react'
 import { MatrixCell as MatrixCellType } from '../../types'
-import { getBadgeStyle, getProgressColor } from '../../utils/formatters'
+import { getProgressColor } from '../../utils/formatters'
 import { useAppStore } from '../../store/appStore'
 
 interface MatrixCellProps {
@@ -17,7 +17,6 @@ export default function MatrixCell({ cell, onClick, animationDelay = 0 }: Matrix
     openAIChat(cell)
   }
   
-  const badgeStyle = getBadgeStyle(cell.newReportsPercent)
   const progressColor = getProgressColor(cell.newReportsPercent)
   const progressPercent = cell.totalReports > 0 
     ? Math.round((cell.newReportsCount / cell.totalReports) * 100) 
