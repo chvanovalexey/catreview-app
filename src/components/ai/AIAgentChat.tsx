@@ -58,21 +58,12 @@ export default function AIAgentChat() {
   // #endregion
   
   useEffect(() => {
-    if (isAIChatOpen && recommendation) {
-      // #region agent log
-      fetch('http://127.0.0.1:7243/ingest/2c6270e7-c8fd-4efd-bf56-949c2db26996',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AIAgentChat.tsx:useEffect',message:'Setting recommendation message',data:{aiRecommendationKey:aiChatCell?.aiRecommendationKey,recommendationLength:recommendation.recommendation.length},timestamp:Date.now(),runId:'initial',hypothesisId:'D'})}).catch(()=>{});
-      // #endregion
-      
-      setMessages([
-        {
-          role: 'assistant',
-          content: recommendation.recommendation
-        }
-      ])
-    } else {
+    // Очищаем сообщения при открытии/закрытии чата
+    // Рекомендация отображается в отдельном блоке выше, не дублируем её в чате
+    if (!isAIChatOpen) {
       setMessages([])
     }
-  }, [isAIChatOpen, recommendation])
+  }, [isAIChatOpen])
   
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
