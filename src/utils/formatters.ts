@@ -96,3 +96,6 @@ export function getProgressColor(percent: number): string {
   if (percent < 100) return 'from-blue-400 to-blue-500'
   return 'from-emerald-400 to-emerald-500'
 }
+
+/** Градиент красный→зелёный для шкалы здоровья (0–100) */
+export const HEALTH_GRADIENT = 'from-red-500 via-amber-400 to-emerald-500'

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import MainMatrix from './components/matrix/MainMatrix'
 import ReportViewer from './components/reports/ReportViewer'
+import ScheduleScreen from './components/schedule/ScheduleScreen'
 import LoginPage from './components/auth/LoginPage'
 import { useAuthStore } from './store/authStore'
 
@@ -37,6 +38,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ReportViewer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/schedule"
+          element={
+            <ProtectedRoute>
+              <ScheduleScreen />
             </ProtectedRoute>
           }
         />

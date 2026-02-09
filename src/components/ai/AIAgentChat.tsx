@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
-import { X, Send, Bot } from 'lucide-react'
+import { X, Send, Sparkles } from 'lucide-react'
 import { useAppStore } from '../../store/appStore'
 import aiRecommendationsData from '../../data/ai_recommendations.json'
 import aiRecommendationsByReportData from '../../data/ai_recommendations_by_report.json'
@@ -106,7 +106,7 @@ export default function AIAgentChat() {
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] flex flex-col">
         <div className="flex items-center justify-between p-4 border-b bg-blue-600 text-white">
           <div className="flex items-center gap-2">
-            <Bot className="w-5 h-5" />
+            <Sparkles className="w-5 h-5" />
             <h2 className="text-lg font-semibold">ИИ-агент</h2>
           </div>
           <button
@@ -159,7 +159,7 @@ export default function AIAgentChat() {
                 >
                   {msg.role === 'assistant' && (
                     <div className="flex items-center gap-2 mb-1">
-                      <Bot className="w-4 h-4" />
+                      <Sparkles className="w-4 h-4" />
                       <span className="text-xs font-medium">ИИ-агент</span>
                     </div>
                   )}

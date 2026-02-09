@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { ListTodo } from 'lucide-react'
+import { ListTodo, BarChart3 } from 'lucide-react'
 import { useMatrixData } from '../../hooks/useMatrixData'
 import { useAppStore } from '../../store/appStore'
 import MatrixCell from './MatrixCell'
@@ -33,24 +33,33 @@ export default function MainMatrix() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
       <header className="bg-white shadow-sm border-b sticky top-0 z-10 backdrop-blur-sm bg-white/95">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-4">
+          <div className="grid grid-cols-3 items-center w-full">
+            <div className="flex items-center justify-start">
               <div className="flex items-center gap-3">
                 <img src="/logo/dixy.svg" alt="Дикси" className="h-8 w-auto" />
                 <img src="/logo/glowbyte.svg" alt="Глоубайт" className="h-8 w-auto" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Category Review
-              </h1>
             </div>
-            <button
-              onClick={toggleTasksPanel}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md"
-            >
-              <ListTodo className="w-5 h-5" />
-              Задачи менеджера
-            </button>
+            <h1 className="text-2xl font-bold text-gray-900 text-center">
+              Category Review
+            </h1>
+            <div className="flex items-center justify-end gap-2">
+              <button
+                onClick={() => navigate('/schedule')}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors shadow-sm hover:shadow-md"
+              >
+                <BarChart3 className="w-5 h-5" />
+                График
+              </button>
+              <button
+                onClick={toggleTasksPanel}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md"
+              >
+                <ListTodo className="w-5 h-5" />
+                Задачи менеджера
+              </button>
+            </div>
           </div>
         </div>
       </header>
