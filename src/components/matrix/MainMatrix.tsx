@@ -37,7 +37,7 @@ export default function MainMatrix() {
   const { rows, columns, getCell } = useMatrixData()
   const { selectedCell, setSelectedCell, isTasksPanelOpen, toggleTasksPanel } = useAppStore()
   const navigate = useNavigate()
-  
+
   const handleCellClick = (row: string, column: string) => {
     const cell = getCell(row, column)
     if (cell) {
@@ -58,7 +58,7 @@ export default function MainMatrix() {
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
-      <header className="bg-white shadow-sm border-b sticky top-0 z-10 backdrop-blur-sm bg-white/95">
+      <header className="bg-white shadow-sm border-b sticky top-0 z-30 backdrop-blur-sm bg-white/95">
         <div className="w-full px-4 sm:px-6 lg:px-8 py-4">
           <div className="grid grid-cols-3 items-center w-full">
             <div className="flex items-center justify-start">
@@ -92,18 +92,20 @@ export default function MainMatrix() {
       
       <main className="w-full px-2 sm:px-4 lg:px-6 py-8">
         <div className="overflow-x-auto">
-          <div className="inline-block min-w-full align-middle">
+          <div className="inline-block align-middle">
             <div className="overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5 rounded-xl">
-              <table className="w-full border-collapse bg-white table-fixed" style={{ minWidth: '100%' }}>
+              <table
+                className="border-collapse bg-white table-auto md:table-fixed"
+              >
                 <colgroup>
-                  <col style={{ width: '200px' }} />
+                  <col className="hidden md:table-column md:w-[200px]" />
                   {columns.map((col) => (
-                    <col key={col} style={{ minWidth: '200px', width: 'auto' }} />
+                    <col key={col} className="min-w-[220px]" />
                   ))}
                 </colgroup>
                 <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                   <tr>
-                    <th className="p-3 text-left text-xs sm:text-sm font-bold text-gray-900 border-r border-gray-200 sticky left-0 bg-gradient-to-r from-gray-50 to-gray-100 z-20">
+                    <th className="p-3 text-left text-xs sm:text-sm font-bold text-gray-900 border-r border-gray-200 sticky left-0 bg-gradient-to-r from-gray-50 to-gray-100 z-20 hidden md:table-cell">
                       <HeaderWithBadge text="Рычаг (Lever)" align="left" />
                     </th>
                     {columns.map((col, idx) => (
@@ -121,7 +123,7 @@ export default function MainMatrix() {
                 <tbody className="divide-y divide-gray-100">
                   {rows.map((row, rowIdx) => (
                     <tr key={row} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="p-3 bg-white text-xs sm:text-sm font-bold text-gray-900 border-r border-gray-200 sticky left-0 z-10 shadow-[2px_0_4px_rgba(0,0,0,0.05)]">
+                      <td className="p-3 bg-white text-xs sm:text-sm font-bold text-gray-900 border-r border-gray-200 sticky left-0 z-10 shadow-[2px_0_4px_rgba(0,0,0,0.05)] hidden md:table-cell">
                         <HeaderWithBadge text={row} align="left" />
                       </td>
                       {columns.map((col, colIdx) => {

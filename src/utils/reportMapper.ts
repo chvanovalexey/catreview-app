@@ -62,6 +62,36 @@ export const reportNames: Record<string, string> = {
 
 const COL = MATRIX_COLUMNS
 
+// Отчёты с данными Дикси + Магнит (сравнение Дикси vs Магнит)
+const REPORTS_WITH_MAGNIT = ['REP-01', 'REP-02', 'REP-03', 'REP-12', 'REP-14', 'REP-19', 'REP-20']
+// Отчёты с данными Дикси + Nielsen (сравнение Дикси vs рынок)
+const REPORTS_WITH_NIELSEN = ['REP-08', 'REP-09', 'REP-10', 'REP-11', 'REP-12', 'REP-13']
+
+// Первые вопросы про сравнение: cellKey -> { magnit?: string, nielsen?: string }
+const comparisonQuestions: Record<string, { magnit?: string; nielsen?: string }> = {
+  [`Ассортимент_${COL[0]}`]: {
+    magnit: 'Дикси vs Магнит: выручка, рост, доля'
+  },
+  [`Ассортимент_${COL[1]}`]: {
+    magnit: 'Дикси vs Магнит: LFL, пенетрация, e-com'
+  },
+  [`Ассортимент_${COL[2]}`]: {
+    magnit: 'Дикси vs Магнит: топ-SKU, эксклюзивы',
+    nielsen: 'Дикси vs Nielsen: доля, динамика подгрупп'
+  },
+  [`Цена и Промо_${COL[2]}`]: {
+    magnit: 'Дикси vs Магнит: ценовые лестницы, динамика'
+  },
+  [`Бренды и Поставщики_${COL[0]}`]: {
+    magnit: 'Дикси vs Магнит: топ-20 производителей',
+    nielsen: 'Дикси vs Nielsen: топ-20 производителей'
+  },
+  [`Бренды и Поставщики_${COL[2]}`]: {
+    magnit: 'Дикси vs Магнит: топ-20 производителей',
+    nielsen: 'Дикси vs Nielsen: топ-20 производителей'
+  }
+}
+
 // Mapping: Lever × Super-logic → reports
 const reportMapping: Record<string, { current: string[], new: string[] }> = {
   // === Ассортимент (Ядро категории) ===
@@ -124,64 +154,64 @@ const reportMapping: Record<string, { current: string[], new: string[] }> = {
 // Вопросы, на которые категорийный менеджер может ответить с помощью отчётов в ячейке
 const cellQuestions: Record<string, string[]> = {
   [`Ассортимент_${COL[0]}`]: [
-    'Падаем или растем? Выполняем ли роль категории?',
-    'Какой процент ассортимента — «хвост» с низкой оборачиваемостью?',
-    'Какая структура P&L от Gross Sales до Net Margin?'
+    'Рост/падение? Роль категории?',
+    'Доля «хвоста» ассортимента?',
+    'Структура P&L (Gross → Net)?'
   ],
   [`Ассортимент_${COL[1]}`]: [
-    'Покрываем ли мы потребности (CDT)? Правильная ли ценовая лестница?',
-    'В каких миссиях покупатели приходят в категорию?',
-    'Как покупатели переключаются между SKU внутри категории?'
+    'CDT-покрытие? Ценовая лестница?',
+    'Миссии покупки в категории?',
+    'Переключение между SKU?'
   ],
   [`Ассортимент_${COL[2]}`]: [
     'Что есть у конкурентов, чего нет у нас?',
-    'Какие топ-SKU рынка у нас отсутствуют?',
-    'Какая доля уникального ассортимента vs конкуренты?'
+    'Топ-SKU рынка отсутствуют?',
+    'Доля уникального ассортимента vs конкуренты?'
   ],
 
   [`Цена и Промо_${COL[0]}`]: [
-    'Падаем или растем? Эффективность промо (Uplift/ROI)?',
-    'Каннибализирует ли промо регулярные продажи?',
-    'Какой эффект от инвестиций в цену и EDLP?'
+    'Рост/падение? Эффективность промо (Uplift/ROI)?',
+    'Каннибализация промо?',
+    'Эффект от EDLP?'
   ],
   [`Цена и Промо_${COL[1]}`]: [
-    'Как покупатели воспринимают наши цены (PPI)?',
-    'Корректна ли ценовая лестница? Какие KVI-товары?',
-    'Какая эластичность спроса по ценовым сегментам?'
+    'Восприятие цен (PPI)?',
+    'Ценовая лестница? KVI-товары?',
+    'Эластичность по сегментам?'
   ],
   [`Цена и Промо_${COL[2]}`]: [
-    'Где мы дороже конкурентов? (PI ценовой индекс)',
-    'Какая доля промо у конкурентов? Промо-давление?',
-    'Совпадают ли наши ценовые лестницы с рынком?'
+    'Где дороже? (PI)',
+    'Доля промо у конкурентов?',
+    'Ценовые лестницы vs рынок?'
   ],
 
   [`Полка (Merch)_${COL[0]}`]: [
-    'Какие продажи/маржа на погонный метр?',
-    'OSA: какой % времени товар доступен на полке?',
-    'Каковы потери и товарные запасы?'
+    'Продажи/маржа на п.м?',
+    'OSA: доступность на полке?',
+    'Потери и запасы?'
   ],
   [`Полка (Merch)_${COL[1]}`]: [
-    'Понятна ли планограмма покупателю? (Айтрекинг)',
-    'Соответствует ли выкладка дереву CDT?',
-    'NPS и CSI: удовлетворённость категорией?'
+    'Планограмма понятна? (Айтрекинг)',
+    'Выкладка = CDT?',
+    'NPS, CSI категории?'
   ],
   [`Полка (Merch)_${COL[2]}`]: [
-    'Share of Shelf: наша доля полки vs конкуренты?',
-    'Какая доступность у конкурентов? (OSA Benchmark)'
+    'Share of Shelf vs конкуренты?',
+    'OSA у конкурентов?'
   ],
 
   [`Бренды и Поставщики_${COL[0]}`]: [
-    'Уровень сервиса (SL), бэк-маржа, штрафы?',
-    'Как работает СТМ? Доля и маржа?',
-    'Какие риски по недопоставкам?'
+    'SL, бэк-маржа, штрафы?',
+    'СТМ: доля и маржа?',
+    'Риски недопоставок?'
   ],
   [`Бренды и Поставщики_${COL[1]}`]: [
-    'Сила брендов: знание, лояльность?',
-    'Как покупатели переключаются между брендами?'
+    'Сила брендов?',
+    'Переключение между брендами?'
   ],
   [`Бренды и Поставщики_${COL[2]}`]: [
-    'Представленность поставщиков у конкурентов? (HHI)',
-    'Какие бренды/поставщики есть у конкурентов?'
+    'Представленность поставщиков (HHI)?',
+    'Бренды/поставщики у конкурентов?'
   ]
 }
 
@@ -192,6 +222,24 @@ export function createReportsFromIds(ids: string[], type: 'current' | 'new'): Re
     type,
     description: `${type === 'current' ? 'Текущий' : 'Новый'} отчёт ${id}`
   }))
+}
+
+const QUESTIONS_PER_CELL = 3
+
+function buildCellQuestions(key: string, currentReportIds: string[]): string[] {
+  const baseQuestions = cellQuestions[key] || []
+  const comparison = comparisonQuestions[key]
+
+  const prepend: string[] = []
+  if (comparison) {
+    const hasMagnit = currentReportIds.some((id) => REPORTS_WITH_MAGNIT.includes(id))
+    const hasNielsen = currentReportIds.some((id) => REPORTS_WITH_NIELSEN.includes(id))
+    if (hasMagnit && comparison.magnit) prepend.push(comparison.magnit)
+    if (hasNielsen && comparison.nielsen) prepend.push(comparison.nielsen)
+  }
+
+  const all = prepend.length > 0 ? [...prepend, ...baseQuestions] : baseQuestions
+  return all.slice(0, QUESTIONS_PER_CELL)
 }
 
 export function getMatrixCell(row: string, column: string): MatrixCell | null {
@@ -207,12 +255,14 @@ export function getMatrixCell(row: string, column: string): MatrixCell | null {
   const totalReports = allReports.length
   const newReportsCount = newReports.length
   const newReportsPercent = totalReports > 0 ? Math.round((newReportsCount / totalReports) * 100) : 0
+
+  const questions = buildCellQuestions(key, mapping.current)
   
   return {
     row,
     column,
-    description: cellQuestions[key]?.join(' ') || '',
-    questions: cellQuestions[key] || [],
+    description: questions.join(' '),
+    questions,
     reports: allReports,
     totalReports,
     newReportsCount,
