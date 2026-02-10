@@ -1,12 +1,12 @@
 import { useMemo } from 'react'
-import { getAllMatrixCells, getMatrixCell } from '../utils/reportMapper'
+import { getAllMatrixCells, getMatrixCell, MATRIX_ROWS, MATRIX_COLUMNS } from '../utils/reportMapper'
 import { MatrixCell } from '../types'
 
 export function useMatrixData() {
   const cells = useMemo(() => getAllMatrixCells(), [])
   
-  const rows = ['Покупатель', 'Рынок', 'Конкуренция', 'Экономика']
-  const columns = ['Ассортимент', 'Цена/Промо', 'Выкладка', 'Операции', 'Поставщики']
+  const rows = [...MATRIX_ROWS]
+  const columns = [...MATRIX_COLUMNS]
   
   const getCell = (row: string, column: string): MatrixCell | null => {
     return getMatrixCell(row, column)

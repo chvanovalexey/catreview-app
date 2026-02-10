@@ -3,6 +3,8 @@ import { MatrixCell as MatrixCellType } from '../../types'
 import { HEALTH_GRADIENT } from '../../utils/formatters'
 import { useAppStore } from '../../store/appStore'
 import reportHealth from '../../data/report_health.json'
+import tasksData from '../../data/tasks.json'
+import { Task } from '../../types'
 
 interface MatrixCellProps {
   cell: MatrixCellType
@@ -18,6 +20,19 @@ function getCellHealth(cell: MatrixCellType): number {
   return Math.round(sum / cell.reports.length)
 }
 
+function getCellImpact(cell: MatrixCellType): { revenue: number; margin: number } {
+  const reportIds = new Set(cell.reports.map(r => r.id))
+  const tasks = tasksData as Task[]
+  const cellTasks = tasks.filter(t => reportIds.has(t.report_id))
+  return cellTasks.reduce(
+    (acc, t) => ({
+      revenue: acc.revenue + t.revenue_impact_million,
+      margin: acc.margin + t.margin_impact_million
+    }),
+    { revenue: 0, margin: 0 }
+  )
+}
+
 export default function MatrixCell({ cell, onClick, animationDelay = 0 }: MatrixCellProps) {
   const { openAIChat } = useAppStore()
   
@@ -27,25 +42,29 @@ export default function MatrixCell({ cell, onClick, animationDelay = 0 }: Matrix
   }
   
   const healthPercent = getCellHealth(cell)
+  const impact = getCellImpact(cell)
   
   return (
     <div
-      className="bg-white border border-gray-200 rounded-lg p-4 cursor-pointer hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 relative group ring-1 ring-transparent hover:ring-blue-200 animate-fade-in-up h-full flex flex-col min-h-[140px]"
+      className="bg-white border border-gray-200 rounded-lg p-4 cursor-pointer hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 relative group ring-1 ring-transparent hover:ring-blue-200 animate-fade-in-up h-full flex flex-col min-h-[160px]"
       style={{ 
         animationDelay: `${animationDelay}ms`
       }}
       onClick={onClick}
     >
-      {/* Header with title */}
-      <div className="mb-3">
-        <h3 className="text-sm font-semibold text-gray-800 leading-tight">
-          {cell.description || `${cell.row} - ${cell.column}`}
-        </h3>
+      {/* Question badges stacked vertically */}
+      <div className="flex flex-col gap-2 mb-3 flex-grow min-h-0">
+        {(cell.questions || []).map((q, idx) => (
+          <span
+            key={idx}
+            className="inline-block text-xs px-2.5 py-1.5 bg-gray-100 text-gray-700 rounded-md border border-gray-200 leading-tight"
+          >
+            {q}
+          </span>
+        ))}
       </div>
       
-      <div className="flex-grow" />
-      
-      {/* Progress bar - здоровье ячейки. Градиент красный→зелёный на всю длину; видимая часть — левые health% (при 50% — красный→жёлтый) */}
+      {/* Progress bar */}
       {cell.totalReports > 0 && (
         <div className="mt-auto pt-3 border-t border-gray-100 pr-10">
           <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
@@ -58,6 +77,16 @@ export default function MatrixCell({ cell, onClick, animationDelay = 0 }: Matrix
           </div>
         </div>
       )}
+      
+      {/* Impact badge at bottom */}
+      <div className="mt-2 flex gap-2 flex-wrap pr-10">
+        <span className="inline-flex items-center text-xs px-2 py-1 bg-emerald-50 text-emerald-800 rounded border border-emerald-200">
+          Выручка: {impact.revenue} млн
+        </span>
+        <span className="inline-flex items-center text-xs px-2 py-1 bg-blue-50 text-blue-800 rounded border border-blue-200">
+          Маржа: {impact.margin} млн
+        </span>
+      </div>
       
       {/* AI button - bottom right corner */}
       <button

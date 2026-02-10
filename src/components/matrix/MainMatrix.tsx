@@ -7,6 +7,32 @@ import ReportSelectionDialog from '../reports/ReportSelectionDialog'
 import TasksPanel from '../tasks/TasksPanel'
 import AIAgentChat from '../ai/AIAgentChat'
 
+// Парсит текст вида "Что-то (Badge)" и возвращает основной текст + бейдж
+function parseHeaderWithBadge(text: string) {
+  const match = text.match(/^(.+?)\s*\(([^)]+)\)\s*$/)
+  if (match) {
+    return { main: match[1].trim(), badge: match[2] }
+  }
+  return { main: text, badge: null }
+}
+
+const HIDDEN_BADGES = ['Merch']
+
+function HeaderWithBadge({ text, align = 'center' }: { text: string; align?: 'left' | 'center' }) {
+  const { main, badge } = parseHeaderWithBadge(text)
+  const showBadge = badge && !HIDDEN_BADGES.includes(badge)
+  return (
+    <span className={`flex flex-col gap-1 ${align === 'left' ? 'items-start' : 'items-center'}`}>
+      <span>{main}</span>
+      {showBadge && (
+        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-100 text-blue-800">
+          {badge}
+        </span>
+      )}
+    </span>
+  )
+}
+
 export default function MainMatrix() {
   const { rows, columns, getCell } = useMatrixData()
   const { selectedCell, setSelectedCell, isTasksPanelOpen, toggleTasksPanel } = useAppStore()
@@ -70,15 +96,15 @@ export default function MainMatrix() {
             <div className="overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5 rounded-xl">
               <table className="w-full border-collapse bg-white table-fixed" style={{ minWidth: '100%' }}>
                 <colgroup>
-                  <col style={{ width: '180px' }} />
-                  {columns.map(() => (
-                    <col key={Math.random()} style={{ minWidth: '200px', width: 'auto' }} />
+                  <col style={{ width: '200px' }} />
+                  {columns.map((col) => (
+                    <col key={col} style={{ minWidth: '200px', width: 'auto' }} />
                   ))}
                 </colgroup>
                 <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                   <tr>
                     <th className="p-3 text-left text-xs sm:text-sm font-bold text-gray-900 border-r border-gray-200 sticky left-0 bg-gradient-to-r from-gray-50 to-gray-100 z-20">
-                      Сущность / Контекст
+                      <HeaderWithBadge text="Рычаг (Lever)" align="left" />
                     </th>
                     {columns.map((col, idx) => (
                       <th
@@ -87,7 +113,7 @@ export default function MainMatrix() {
                           idx < columns.length - 1 ? 'border-r border-gray-200' : ''
                         }`}
                       >
-                        {col}
+                        <HeaderWithBadge text={col} />
                       </th>
                     ))}
                   </tr>
@@ -96,7 +122,7 @@ export default function MainMatrix() {
                   {rows.map((row, rowIdx) => (
                     <tr key={row} className="hover:bg-gray-50/50 transition-colors">
                       <td className="p-3 bg-white text-xs sm:text-sm font-bold text-gray-900 border-r border-gray-200 sticky left-0 z-10 shadow-[2px_0_4px_rgba(0,0,0,0.05)]">
-                        {row}
+                        <HeaderWithBadge text={row} align="left" />
                       </td>
                       {columns.map((col, colIdx) => {
                         const cell = getCell(row, col)
@@ -110,7 +136,7 @@ export default function MainMatrix() {
                             }`}
                             style={{ height: '100%', verticalAlign: 'top' }}
                           >
-                            {cell && cell.totalReports > 0 ? (
+                            {cell ? (
                               <MatrixCell
                                 cell={cell}
                                 onClick={() => handleCellClick(row, col)}

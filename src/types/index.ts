@@ -36,6 +36,7 @@ export interface MatrixCell {
   row: string
   column: string
   description: string
+  questions: string[]
   reports: Report[]
   totalReports: number
   newReportsCount: number

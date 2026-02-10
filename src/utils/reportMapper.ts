@@ -1,5 +1,13 @@
 import { MatrixCell, Report } from '../types'
 
+// New matrix structure: Levers (rows) × Super-logic stages (columns)
+export const MATRIX_ROWS = ['Ассортимент', 'Цена и Промо', 'Полка (Merch)', 'Бренды и Поставщики'] as const
+export const MATRIX_COLUMNS = [
+  '1. Здоровье и Эффективность (Internal)',
+  '2. Потребности и Структура (Shopper)',
+  '3. Разрывы с Рынком (External)'
+] as const
+
 // Mapping of report codes to their names from report-list.txt
 export const reportNames: Record<string, string> = {
   // Current reports (AS-IS)
@@ -52,108 +60,129 @@ export const reportNames: Record<string, string> = {
   'NEW-REP-26': 'Service Level',
 }
 
-// Mapping from report-list.txt
+const COL = MATRIX_COLUMNS
+
+// Mapping: Lever × Super-logic → reports
 const reportMapping: Record<string, { current: string[], new: string[] }> = {
-  'Покупатель_Ассортимент': {
-    current: ['REP-04'],
-    new: ['NEW-REP-01', 'NEW-REP-02', 'NEW-REP-03']
-  },
-  'Покупатель_Цена/Промо': {
-    current: ['REP-04', 'REP-15'],
-    new: ['NEW-REP-04', 'NEW-REP-05']
-  },
-  'Покупатель_Выкладка': {
-    current: [],
-    new: ['NEW-REP-06', 'NEW-REP-07']
-  },
-  'Покупатель_Операции': {
-    current: [],
-    new: ['NEW-REP-08', 'NEW-REP-09']
-  },
-  'Покупатель_Поставщики': {
-    current: [],
-    new: ['NEW-REP-10']
-  },
-  'Рынок_Ассортимент': {
-    current: ['REP-08', 'REP-09', 'REP-10', 'REP-11', 'REP-13'],
-    new: ['NEW-REP-11']
-  },
-  'Рынок_Цена/Промо': {
-    current: [],
-    new: []
-  },
-  'Рынок_Выкладка': {
-    current: [],
-    new: []
-  },
-  'Рынок_Операции': {
-    current: [],
-    new: []
-  },
-  'Рынок_Поставщики': {
-    current: ['REP-12'],
-    new: ['NEW-REP-12']
-  },
-  'Конкуренция_Ассортимент': {
-    current: ['REP-06', 'REP-19'],
-    new: ['NEW-REP-13']
-  },
-  'Конкуренция_Цена/Промо': {
-    current: ['REP-20', 'REP-05'],
-    new: ['NEW-REP-14', 'NEW-REP-15']
-  },
-  'Конкуренция_Выкладка': {
-    current: [],
-    new: ['NEW-REP-16']
-  },
-  'Конкуренция_Операции': {
-    current: [],
-    new: ['NEW-REP-17']
-  },
-  'Конкуренция_Поставщики': {
-    current: [],
-    new: ['NEW-REP-18']
-  },
-  'Экономика_Ассортимент': {
+  // === Ассортимент (Ядро категории) ===
+  [`Ассортимент_${COL[0]}`]: {
     current: ['REP-01', 'REP-02', 'REP-03'],
     new: ['NEW-REP-19', 'NEW-REP-20', 'NEW-REP-21']
   },
-  'Экономика_Цена/Промо': {
+  [`Ассортимент_${COL[1]}`]: {
+    current: ['REP-04', 'REP-14'],
+    new: ['NEW-REP-01', 'NEW-REP-02', 'NEW-REP-03']
+  },
+  [`Ассортимент_${COL[2]}`]: {
+    current: ['REP-08', 'REP-09', 'REP-10', 'REP-11', 'REP-13', 'REP-06', 'REP-19'],
+    new: ['NEW-REP-11', 'NEW-REP-13']
+  },
+
+  // === Цена и Промо (Восприятие ценности) ===
+  [`Цена и Промо_${COL[0]}`]: {
     current: ['REP-16', 'REP-15'],
     new: ['NEW-REP-22']
   },
-  'Экономика_Выкладка': {
-    current: [],
-    new: ['NEW-REP-23']
+  [`Цена и Промо_${COL[1]}`]: {
+    current: ['REP-04'],
+    new: ['NEW-REP-04', 'NEW-REP-05']
   },
-  'Экономика_Операции': {
+  [`Цена и Промо_${COL[2]}`]: {
+    current: ['REP-05', 'REP-20'],
+    new: ['NEW-REP-14', 'NEW-REP-15']
+  },
+
+  // === Полка (Merch) — Выкладка + OSA ===
+  [`Полка (Merch)_${COL[0]}`]: {
     current: ['REP-17'],
-    new: ['NEW-REP-24']
+    new: ['NEW-REP-23', 'NEW-REP-24']
   },
-  'Экономика_Поставщики': {
+  [`Полка (Merch)_${COL[1]}`]: {
+    current: [],
+    new: ['NEW-REP-06', 'NEW-REP-07', 'NEW-REP-08', 'NEW-REP-09']
+  },
+  [`Полка (Merch)_${COL[2]}`]: {
+    current: [],
+    new: ['NEW-REP-16', 'NEW-REP-17']
+  },
+
+  // === Бренды и Поставщики (Закупка) ===
+  [`Бренды и Поставщики_${COL[0]}`]: {
     current: ['REP-12', 'REP-18'],
     new: ['NEW-REP-25', 'NEW-REP-26']
+  },
+  [`Бренды и Поставщики_${COL[1]}`]: {
+    current: [],
+    new: ['NEW-REP-10']
+  },
+  [`Бренды и Поставщики_${COL[2]}`]: {
+    current: ['REP-12'],
+    new: ['NEW-REP-12', 'NEW-REP-18']
   }
 }
 
-const cellDescriptions: Record<string, string> = {
-  'Покупатель_Ассортимент': 'Опросы, Исследования - Восприятие ассортимента',
-  'Покупатель_Цена/Промо': 'Исследование - Восприятие цен',
-  'Покупатель_Выкладка': 'Соответствие CDT',
-  'Покупатель_Операции': 'Опросы, Исследования - NPS',
-  'Покупатель_Поставщики': 'Опросы, Исследования - отношение к брендам',
-  'Рынок_Ассортимент': 'Анализ рынка',
-  'Рынок_Поставщики': 'Анализ основных поставщиков',
-  'Конкуренция_Ассортимент': 'Визиты в магазины, Рыночные данные',
-  'Конкуренция_Цена/Промо': 'Мониторинги',
-  'Конкуренция_Выкладка': 'Визиты в магазины',
-  'Конкуренция_Операции': 'Визиты магазины - Наличие товаров у конкурентов',
-  'Конкуренция_Поставщики': 'Визиты в магазины - бренды у конкурентов',
-  'Экономика_Ассортимент': 'Анализ продаж и прибыли',
-  'Экономика_Цена/Промо': 'Анализ эффективности промо',
-  'Экономика_Выкладка': 'Анализ маржи на метр полки',
-  'Экономика_Операции': 'Анализ доступности',
-  'Экономика_Поставщики': 'Анализ продаж/маржи/шт. по поставщикам'
+// Вопросы, на которые категорийный менеджер может ответить с помощью отчётов в ячейке
+const cellQuestions: Record<string, string[]> = {
+  [`Ассортимент_${COL[0]}`]: [
+    'Падаем или растем? Выполняем ли роль категории?',
+    'Какой процент ассортимента — «хвост» с низкой оборачиваемостью?',
+    'Какая структура P&L от Gross Sales до Net Margin?'
+  ],
+  [`Ассортимент_${COL[1]}`]: [
+    'Покрываем ли мы потребности (CDT)? Правильная ли ценовая лестница?',
+    'В каких миссиях покупатели приходят в категорию?',
+    'Как покупатели переключаются между SKU внутри категории?'
+  ],
+  [`Ассортимент_${COL[2]}`]: [
+    'Что есть у конкурентов, чего нет у нас?',
+    'Какие топ-SKU рынка у нас отсутствуют?',
+    'Какая доля уникального ассортимента vs конкуренты?'
+  ],
+
+  [`Цена и Промо_${COL[0]}`]: [
+    'Падаем или растем? Эффективность промо (Uplift/ROI)?',
+    'Каннибализирует ли промо регулярные продажи?',
+    'Какой эффект от инвестиций в цену и EDLP?'
+  ],
+  [`Цена и Промо_${COL[1]}`]: [
+    'Как покупатели воспринимают наши цены (PPI)?',
+    'Корректна ли ценовая лестница? Какие KVI-товары?',
+    'Какая эластичность спроса по ценовым сегментам?'
+  ],
+  [`Цена и Промо_${COL[2]}`]: [
+    'Где мы дороже конкурентов? (PI ценовой индекс)',
+    'Какая доля промо у конкурентов? Промо-давление?',
+    'Совпадают ли наши ценовые лестницы с рынком?'
+  ],
+
+  [`Полка (Merch)_${COL[0]}`]: [
+    'Какие продажи/маржа на погонный метр?',
+    'OSA: какой % времени товар доступен на полке?',
+    'Каковы потери и товарные запасы?'
+  ],
+  [`Полка (Merch)_${COL[1]}`]: [
+    'Понятна ли планограмма покупателю? (Айтрекинг)',
+    'Соответствует ли выкладка дереву CDT?',
+    'NPS и CSI: удовлетворённость категорией?'
+  ],
+  [`Полка (Merch)_${COL[2]}`]: [
+    'Share of Shelf: наша доля полки vs конкуренты?',
+    'Какая доступность у конкурентов? (OSA Benchmark)'
+  ],
+
+  [`Бренды и Поставщики_${COL[0]}`]: [
+    'Уровень сервиса (SL), бэк-маржа, штрафы?',
+    'Как работает СТМ? Доля и маржа?',
+    'Какие риски по недопоставкам?'
+  ],
+  [`Бренды и Поставщики_${COL[1]}`]: [
+    'Сила брендов: знание, лояльность?',
+    'Как покупатели переключаются между брендами?'
+  ],
+  [`Бренды и Поставщики_${COL[2]}`]: [
+    'Представленность поставщиков у конкурентов? (HHI)',
+    'Какие бренды/поставщики есть у конкурентов?'
+  ]
 }
 
 export function createReportsFromIds(ids: string[], type: 'current' | 'new'): Report[] {
@@ -182,7 +211,8 @@ export function getMatrixCell(row: string, column: string): MatrixCell | null {
   return {
     row,
     column,
-    description: cellDescriptions[key] || '',
+    description: cellQuestions[key]?.join(' ') || '',
+    questions: cellQuestions[key] || [],
     reports: allReports,
     totalReports,
     newReportsCount,
@@ -192,15 +222,12 @@ export function getMatrixCell(row: string, column: string): MatrixCell | null {
 }
 
 export function getAllMatrixCells(): MatrixCell[] {
-  const rows = ['Покупатель', 'Рынок', 'Конкуренция', 'Экономика']
-  const columns = ['Ассортимент', 'Цена/Промо', 'Выкладка', 'Операции', 'Поставщики']
-  
   const cells: MatrixCell[] = []
   
-  for (const row of rows) {
-    for (const column of columns) {
+  for (const row of MATRIX_ROWS) {
+    for (const column of MATRIX_COLUMNS) {
       const cell = getMatrixCell(row, column)
-      if (cell && cell.totalReports > 0) {
+      if (cell) {
         cells.push(cell)
       }
     }
@@ -216,33 +243,14 @@ export function getAllMatrixCells(): MatrixCell[] {
 export function findCellByReportId(reportId: string | null | undefined): MatrixCell | null {
   if (!reportId) return null
   
-  // #region agent log
-  fetch('http://127.0.0.1:7243/ingest/2c6270e7-c8fd-4efd-bf56-949c2db26996',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'reportMapper.ts:findCellByReportId',message:'Finding cell for reportId',data:{reportId},timestamp:Date.now(),runId:'initial',hypothesisId:'A'})}).catch(()=>{});
-  // #endregion
-  
-  // Search through all cells to find which one contains this report
   for (const [cellKey, mapping] of Object.entries(reportMapping)) {
-    const [row, column] = cellKey.split('_')
-    
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/2c6270e7-c8fd-4efd-bf56-949c2db26996',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'reportMapper.ts:findCellByReportId',message:'Checking cell',data:{cellKey,row,column,currentReports:mapping.current,newReports:mapping.new,reportId},timestamp:Date.now(),runId:'initial',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
-    
-    // Check if report is in current or new reports
     if (mapping.current.includes(reportId) || mapping.new.includes(reportId)) {
-      const cell = getMatrixCell(row, column)
-      
-      // #region agent log
-      fetch('http://127.0.0.1:7243/ingest/2c6270e7-c8fd-4efd-bf56-949c2db26996',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'reportMapper.ts:findCellByReportId',message:'Found matching cell',data:{cellKey,aiRecommendationKey:cell?.aiRecommendationKey,reportId},timestamp:Date.now(),runId:'initial',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
-      
-      return cell
+      const idx = cellKey.indexOf('_')
+      const row = cellKey.slice(0, idx)
+      const column = cellKey.slice(idx + 1)
+      return getMatrixCell(row, column)
     }
   }
-  
-  // #region agent log
-  fetch('http://127.0.0.1:7243/ingest/2c6270e7-c8fd-4efd-bf56-949c2db26996',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'reportMapper.ts:findCellByReportId',message:'No cell found for reportId',data:{reportId},timestamp:Date.now(),runId:'initial',hypothesisId:'A'})}).catch(()=>{});
-  // #endregion
   
   return null
 }
