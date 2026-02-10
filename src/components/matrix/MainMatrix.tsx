@@ -60,30 +60,28 @@ export default function MainMatrix() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
       <header className="bg-white shadow-sm border-b sticky top-0 z-30 backdrop-blur-sm bg-white/95">
         <div className="w-full px-4 sm:px-6 lg:px-8 py-4">
-          <div className="grid grid-cols-3 items-center w-full">
-            <div className="flex items-center justify-start">
-              <div className="flex items-center gap-3">
-                <img src="/logo/dixy.svg" alt="Дикси" className="h-8 w-auto" />
-                <img src="/logo/glowbyte.svg" alt="Глоубайт" className="h-8 w-auto" />
-              </div>
+          <div className="flex items-center justify-between w-full gap-4">
+            <div className="flex items-center gap-3 min-w-0 flex-1 sm:flex-initial">
+              <img src="/logo/dixy.svg" alt="Дикси" className="h-8 w-auto" />
+              <img src="/logo/glowbyte.svg" alt="Глоубайт" className="h-8 w-auto" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 text-center">
+            <h1 className="text-2xl font-bold text-gray-900 text-center hidden sm:block flex-shrink-0">
               Category Review
             </h1>
-            <div className="flex items-center justify-end gap-2">
+            <div className="flex items-center justify-end gap-2 flex-1 sm:flex-initial min-w-0">
               <button
                 onClick={() => navigate('/schedule')}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors shadow-sm hover:shadow-md"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors shadow-sm hover:shadow-md"
               >
                 <BarChart3 className="w-5 h-5" />
-                График
+                <span className="hidden sm:inline">График</span>
               </button>
               <button
                 onClick={toggleTasksPanel}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md"
               >
                 <ListTodo className="w-5 h-5" />
-                Задачи менеджера
+                <span className="hidden sm:inline">Задачи менеджера</span>
               </button>
             </div>
           </div>
@@ -91,7 +89,8 @@ export default function MainMatrix() {
       </header>
       
       <main className="w-full px-2 sm:px-4 lg:px-6 py-8">
-        <div className="overflow-x-auto">
+        {/* Десктоп: таблица */}
+        <div className="hidden sm:block overflow-x-auto">
           <div className="inline-block align-middle">
             <div className="overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5 rounded-xl">
               <table
@@ -166,6 +165,56 @@ export default function MainMatrix() {
               </table>
             </div>
           </div>
+        </div>
+
+        {/* Мобильная: блоки колонок друг под другом */}
+        <div className="sm:hidden flex flex-col gap-8">
+          {columns.map((col, colIdx) => {
+            const cellBaseIndex = colIdx * rows.length
+            return (
+              <div
+                key={col}
+                className="overflow-hidden shadow-sm ring-1 ring-black ring-opacity-5 rounded-xl bg-white"
+              >
+                <div className="p-3 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+                  <h2 className="text-sm font-bold text-gray-900 text-center">
+                    <HeaderWithBadge text={col} />
+                  </h2>
+                </div>
+                <div className="divide-y divide-gray-100">
+                  {rows.map((row, rowIdx) => {
+                    const cell = getCell(row, col)
+                    const cellIndex = cellBaseIndex + rowIdx
+                    const animationDelay = cellIndex * 30
+                    return (
+                      <div key={`${row}-${col}`} className="p-2">
+                        <div className="text-xs font-bold text-gray-700 mb-2">
+                          <HeaderWithBadge text={row} align="left" />
+                        </div>
+                        {cell ? (
+                          <MatrixCell
+                            cell={cell}
+                            onClick={() => handleCellClick(row, col)}
+                            animationDelay={animationDelay}
+                          />
+                        ) : (
+                          <div
+                            className="p-6 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-400 text-center flex flex-col items-center justify-center min-h-[140px] animate-fade-in-up"
+                            style={{ animationDelay: `${animationDelay}ms` }}
+                          >
+                            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mb-2">
+                              <span className="text-gray-400">—</span>
+                            </div>
+                            Нет данных
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })}
         </div>
       </main>
       
