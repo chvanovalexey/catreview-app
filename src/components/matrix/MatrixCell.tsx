@@ -50,8 +50,8 @@ export default function MatrixCell({ cell, onClick, animationDelay = 0 }: Matrix
       }}
       onClick={onClick}
     >
-      {/* Question badges - width limited so gap to money badges. На узких экранах меньше отступ (бейджи компактнее) */}
-      <div className="flex flex-col gap-2 mb-2 flex-grow min-h-0 pr-14 md:pr-[7.5rem]">
+      {/* Question badges - отступ справа для бейджей выручки/маржа. На узких экранах больше зазор */}
+      <div className="flex flex-col gap-2 mb-2 flex-grow min-h-0 pr-20 md:pr-[7.5rem]">
         {(cell.questions || []).map((q, idx) => (
           <span
             key={idx}
