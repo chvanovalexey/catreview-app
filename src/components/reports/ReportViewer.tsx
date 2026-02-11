@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { ArrowLeft, Sparkles, MessageSquare, CheckSquare, Info } from 'lucide-react'
+import { ArrowLeft, Sparkles, MessageSquare, CheckSquare, Info, Plus } from 'lucide-react'
 import { useReportComments, useReportTasks } from '../../hooks/useReports'
 import { HEALTH_GRADIENT } from '../../utils/formatters'
 import reportHealth from '../../data/report_health.json'
@@ -10,10 +10,14 @@ import { MatrixCell } from '../../types'
 import CommentsList from './CommentsList'
 import TasksList from './TasksList'
 import AIAgentChat from '../ai/AIAgentChat'
+import InitiativeForm from '../preparation/InitiativeForm'
+import { usePreparationStore } from '../../store/preparationStore'
 
 interface LocationState {
-  source?: 'dialog' | 'tasks'
+  source?: 'dialog' | 'tasks' | 'preparation'
   cell?: MatrixCell
+  stepId?: number
+  returnTo?: string
 }
 
 export default function ReportViewer() {
@@ -21,7 +25,9 @@ export default function ReportViewer() {
   const navigate = useNavigate()
   const location = useLocation()
   const { openAIChatForReport, setSelectedCell, openTasksPanel } = useAppStore()
+  const { addInitiative, currentStepId } = usePreparationStore()
   const [activeTab, setActiveTab] = useState<'comments' | 'tasks'>('comments')
+  const [showInitiativeForm, setShowInitiativeForm] = useState(false)
   
   const locationState = location.state as LocationState | null
   
@@ -41,17 +47,15 @@ export default function ReportViewer() {
   const healthPercent = reportId ? (reportHealthMap[reportId] ?? 50) : 50
   
   const handleBackClick = () => {
-    // Восстанавливаем модальное окно в зависимости от источника открытия
-    if (locationState?.source === 'dialog' && locationState?.cell) {
-      // Открываем ReportSelectionDialog с сохранённой ячейкой
+    if (locationState?.source === 'preparation' && locationState?.returnTo) {
+      navigate(locationState.returnTo)
+    } else if (locationState?.source === 'dialog' && locationState?.cell) {
       setSelectedCell(locationState.cell)
-      navigate('/')
+      navigate('/matrix')
     } else if (locationState?.source === 'tasks') {
-      // Открываем TasksPanel
       openTasksPanel()
       navigate('/')
     } else {
-      // Если источник неизвестен, просто возвращаемся на главный экран
       navigate('/')
     }
   }
@@ -145,32 +149,41 @@ export default function ReportViewer() {
           <div className="w-full">
             <div className="bg-white rounded-lg shadow-md">
               <div className="border-b border-gray-200">
-                <div className="flex">
+                <div className="flex items-center">
+                  <div className="flex flex-1">
+                    <button
+                      onClick={() => setActiveTab('comments')}
+                      className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+                        activeTab === 'comments'
+                          ? 'text-blue-600 border-b-2 border-blue-600'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      <div className="flex items-center justify-center gap-2">
+                        <MessageSquare className="w-4 h-4" />
+                        Комментарии ({comments.length})
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('tasks')}
+                      className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+                        activeTab === 'tasks'
+                          ? 'text-blue-600 border-b-2 border-blue-600'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      <div className="flex items-center justify-center gap-2">
+                        <CheckSquare className="w-4 h-4" />
+                        Задачи ({tasks.length})
+                      </div>
+                    </button>
+                  </div>
                   <button
-                    onClick={() => setActiveTab('comments')}
-                    className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
-                      activeTab === 'comments'
-                        ? 'text-blue-600 border-b-2 border-blue-600'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
+                    onClick={() => setShowInitiativeForm(true)}
+                    className="flex items-center gap-2 px-4 py-2 mx-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                   >
-                    <div className="flex items-center justify-center gap-2">
-                      <MessageSquare className="w-4 h-4" />
-                      Комментарии ({comments.length})
-                    </div>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('tasks')}
-                    className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
-                      activeTab === 'tasks'
-                        ? 'text-blue-600 border-b-2 border-blue-600'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      <CheckSquare className="w-4 h-4" />
-                      Задачи ({tasks.length})
-                    </div>
+                    <Plus className="w-4 h-4" />
+                    Добавить инициативу
                   </button>
                 </div>
               </div>
@@ -186,6 +199,25 @@ export default function ReportViewer() {
           </div>
         </div>
       </main>
+      
+      {showInitiativeForm && reportId && (
+        <InitiativeForm
+          initialData={{
+            report_id: reportId,
+            description: '',
+            status: 'Новая',
+            revenue_impact_million: 0,
+            margin_impact_million: 0,
+            due_date: new Date().toISOString().split('T')[0],
+            created_date: new Date().toISOString().split('T')[0],
+          }}
+          onSave={(taskData) => {
+            const stepId = locationState?.stepId ?? currentStepId ?? 1
+            addInitiative(stepId, taskData)
+          }}
+          onClose={() => setShowInitiativeForm(false)}
+        />
+      )}
       
       <AIAgentChat />
     </div>

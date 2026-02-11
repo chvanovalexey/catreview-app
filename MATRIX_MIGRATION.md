@@ -21,7 +21,7 @@
 
 | Ось | Элементы |
 |-----|----------|
-| **Строки (Рычаги)** | Ассортимент, Цена и Промо, Полка (Merch), Поставщики |
+| **Строки (Рычаги)** | Ассортимент, Цена и Промо, Полка (Merch), Бренды и Поставщики |
 | **Столбцы (Super-logic)** | 1. Здоровье (Internal), 2. Потребности (Shopper), 3. Разрывы (External) |
 
 **Преимущества:**
@@ -58,7 +58,7 @@
 - **Потребности:** NEW-REP-06, NEW-REP-07, NEW-REP-08, NEW-REP-09
 - **Разрывы:** NEW-REP-16, NEW-REP-17
 
-#### Поставщики (Закупка)
+#### Бренды и Поставщики (Закупка)
 - **Здоровье:** REP-12, REP-18, NEW-REP-25, NEW-REP-26
 - **Потребности:** NEW-REP-10
 - **Разрывы:** REP-12, NEW-REP-12, NEW-REP-18
@@ -69,7 +69,7 @@
 
 | Файл | Изменения |
 |------|-----------|
-| `src/utils/reportMapper.ts` | Новые rows/columns, reportMapping, cellDescriptions, findCellByReportId |
+| `src/utils/reportMapper.ts` | MATRIX_ROWS, MATRIX_COLUMNS, reportMapping, cellQuestions, comparisonQuestions, findCellByReportId |
 | `src/hooks/useMatrixData.ts` | Импорт MATRIX_ROWS, MATRIX_COLUMNS из reportMapper |
 | `src/components/matrix/MainMatrix.tsx` | Заголовок «Рычаг (Lever)», отображение всех ячеек |
 | `src/components/matrix/MatrixCell.tsx` | Бейджи с вопросами, бейдж влияния на выручку/маржу |

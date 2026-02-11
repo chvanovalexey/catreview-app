@@ -304,3 +304,19 @@ export function findCellByReportId(reportId: string | null | undefined): MatrixC
   
   return null
 }
+
+/**
+ * Returns preparation step Id (1, 2, or 3) for a report based on which column it belongs to.
+ * Step 1 = Health, Step 2 = Shopper, Step 3 = External. Returns first match.
+ */
+export function getStepIdForReportId(reportId: string | null | undefined): number | null {
+  if (!reportId) return null
+  for (let i = 0; i < COL.length; i++) {
+    for (const [cellKey, mapping] of Object.entries(reportMapping)) {
+      if (cellKey.endsWith(COL[i]) && (mapping.current.includes(reportId) || mapping.new.includes(reportId))) {
+        return i + 1
+      }
+    }
+  }
+  return null
+}

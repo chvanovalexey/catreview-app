@@ -1,10 +1,9 @@
 import { useNavigate } from 'react-router-dom'
-import { ListTodo, BarChart3 } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { useMatrixData } from '../../hooks/useMatrixData'
 import { useAppStore } from '../../store/appStore'
 import MatrixCell from './MatrixCell'
 import ReportSelectionDialog from '../reports/ReportSelectionDialog'
-import TasksPanel from '../tasks/TasksPanel'
 import AIAgentChat from '../ai/AIAgentChat'
 
 // Парсит текст вида "Что-то (Badge)" и возвращает основной текст + бейдж
@@ -35,7 +34,7 @@ function HeaderWithBadge({ text, align = 'center' }: { text: string; align?: 'le
 
 export default function MainMatrix() {
   const { rows, columns, getCell } = useMatrixData()
-  const { selectedCell, setSelectedCell, isTasksPanelOpen, toggleTasksPanel } = useAppStore()
+  const { selectedCell, setSelectedCell } = useAppStore()
   const navigate = useNavigate()
 
   const handleCellClick = (row: string, column: string) => {
@@ -70,18 +69,11 @@ export default function MainMatrix() {
             </h1>
             <div className="flex items-center justify-end gap-2 flex-1 sm:flex-initial min-w-0">
               <button
-                onClick={() => navigate('/schedule')}
+                onClick={() => navigate('/')}
                 className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors shadow-sm hover:shadow-md"
               >
-                <BarChart3 className="w-5 h-5" />
-                <span className="hidden sm:inline">График</span>
-              </button>
-              <button
-                onClick={toggleTasksPanel}
-                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md"
-              >
-                <ListTodo className="w-5 h-5" />
-                <span className="hidden sm:inline">Задачи менеджера</span>
+                <ArrowLeft className="w-5 h-5" />
+                <span className="hidden sm:inline">На главную</span>
               </button>
             </div>
           </div>
@@ -224,10 +216,6 @@ export default function MainMatrix() {
           onClose={() => setSelectedCell(null)}
           onReportSelect={handleReportSelect}
         />
-      )}
-      
-      {isTasksPanelOpen && (
-        <TasksPanel onClose={toggleTasksPanel} />
       )}
       
       <AIAgentChat />
