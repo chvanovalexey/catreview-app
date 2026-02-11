@@ -53,9 +53,9 @@ export default function PreparationMode() {
         </div>
       </header>
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0">
         <ProgressTracker />
-        <div className="flex-1 overflow-y-auto p-4 md:p-6">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 min-h-0">
           <Outlet />
         </div>
       </div>
