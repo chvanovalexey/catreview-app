@@ -51,7 +51,7 @@ e-com	Ассортимент		NEW-REP-34: Ассортимент e-com: уник
 Рычаг (Lever) | 1. Здоровье (Internal) | 2. Потребности (Shopper) | 3. Разрывы (External)
 Ассортимент | REP-01, REP-02, REP-03, NEW-REP-19, NEW-REP-20, NEW-REP-21, NEW-REP-27 | REP-04, REP-14, NEW-REP-01, NEW-REP-02, NEW-REP-03 | REP-08, REP-09, REP-10, REP-11, REP-13, REP-06, REP-19, NEW-REP-11, NEW-REP-13, NEW-REP-29
 Цена и Промо | REP-16, REP-15, NEW-REP-22 | REP-04, NEW-REP-04, NEW-REP-05, NEW-REP-28 | REP-05, REP-20, NEW-REP-14, NEW-REP-15, NEW-REP-29
-Полка (Merch) | REP-17, NEW-REP-23, NEW-REP-24 | NEW-REP-06, NEW-REP-07, NEW-REP-08, NEW-REP-09 | NEW-REP-16, NEW-REP-17, NEW-REP-29
+Полка (Merch) | REP-17, REP-PLANO, NEW-REP-23, NEW-REP-24 | NEW-REP-06, NEW-REP-07, NEW-REP-08, NEW-REP-09 | NEW-REP-16, NEW-REP-17, NEW-REP-29
 Поставщики | REP-12, REP-18, NEW-REP-25, NEW-REP-26 | NEW-REP-10 | REP-12, NEW-REP-12, NEW-REP-18, NEW-REP-29
 
 Отдельный шаг - e-com (Электронная коммерция):

@@ -9,6 +9,7 @@ import { ImpactBadges } from './ImpactBadges'
 import InitiativesSummary from './InitiativesSummary'
 import FinalSummary from './FinalSummary'
 import UniversalReport from './UniversalReport'
+import SkuRotationAI from './SkuRotationAI'
 
 // --- E-com mock data ---
 const ECOM_REPORT_IDS = ['NEW-REP-30', 'NEW-REP-31', 'NEW-REP-32', 'NEW-REP-33', 'NEW-REP-34'] as const
@@ -232,6 +233,7 @@ export default function PreparationStep() {
               rows={4}
             />
           </div>
+          <SkuRotationAI />
           <UniversalReport />
         </div>
       )}

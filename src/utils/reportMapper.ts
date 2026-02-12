@@ -64,6 +64,9 @@ export const reportNames: Record<string, string> = {
   'NEW-REP-28': 'СТМ: Ценообразование vs бренды',
   'NEW-REP-29': 'СТМ: Сравнение с конкурентами',
   
+  // Специальный отчёт — планограмма
+  'REP-PLANO': 'Планограмма категории',
+
   // E-commerce reports
   'NEW-REP-30': 'Доля e-com в продажах категории',
   'NEW-REP-31': 'Динамика онлайн vs офлайн',
@@ -136,7 +139,7 @@ const reportMapping: Record<string, { current: string[], new: string[] }> = {
 
   // === Полка (Merch) — Выкладка + OSA ===
   [`Полка (Merch)_${COL[0]}`]: {
-    current: ['REP-17'],
+    current: ['REP-17', 'REP-PLANO'],
     new: ['NEW-REP-23', 'NEW-REP-24']
   },
   [`Полка (Merch)_${COL[1]}`]: {
@@ -174,7 +177,7 @@ const mandatoryReports: Record<string, string[]> = {
   [`Цена и Промо_${COL[1]}`]: ['NEW-REP-04', 'NEW-REP-05'],
   [`Цена и Промо_${COL[2]}`]: ['REP-20', 'NEW-REP-14'],
   
-  [`Полка (Merch)_${COL[0]}`]: ['REP-17', 'NEW-REP-23'],
+  [`Полка (Merch)_${COL[0]}`]: ['REP-17', 'REP-PLANO', 'NEW-REP-23'],
   [`Полка (Merch)_${COL[1]}`]: ['NEW-REP-06', 'NEW-REP-08'],
   [`Полка (Merch)_${COL[2]}`]: ['NEW-REP-16', 'NEW-REP-17'],
   
