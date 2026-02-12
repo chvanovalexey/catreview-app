@@ -32,7 +32,7 @@ export default function ModeSelectionScreen() {
                 className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md"
               >
                 <ListTodo className="w-5 h-5" />
-                <span className="hidden sm:inline">Задачи менеджера</span>
+                <span className="hidden sm:inline">Амбиции менеджера</span>
               </button>
             </div>
           </div>
@@ -72,7 +72,7 @@ export default function ModeSelectionScreen() {
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Подготовка к защите</h3>
               <p className="text-sm text-gray-600 text-center">
-                Пошаговый процесс анализа с накоплением инициатив и приоритизацией.
+                Пошаговый процесс анализа с накоплением амбиций и приоритизацией.
               </p>
             </button>
           </div>

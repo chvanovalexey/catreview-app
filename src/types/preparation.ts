@@ -69,18 +69,24 @@ export const PREPARATION_STEPS: PreparationStepConfig[] = [
   },
   {
     id: 4,
+    name: 'e-com',
+    description: 'Анализ электронной коммерции',
+    type: 'analysis',
+  },
+  {
+    id: 5,
     name: 'Детализация до SKU',
     description: 'Углубленный анализ проблемных зон',
     type: 'analysis',
   },
   {
-    id: 5,
-    name: 'Инициативы и приоритизация',
-    description: 'Просмотр, корректировка и приоритизация инициатив',
+    id: 6,
+    name: 'Амбиции и приоритизация',
+    description: 'Просмотр, корректировка и приоритизация амбиций',
     type: 'initiatives',
   },
   {
-    id: 6,
+    id: 7,
     name: 'Финализация',
     description: 'Итоговый summary с экспортом',
     type: 'summary',

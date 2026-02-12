@@ -42,6 +42,19 @@ export default function MatrixCell({ cell, onClick, animationDelay = 0 }: Matrix
   const progressPercent = cell.newReportsPercent
   const impact = getCellImpact(cell)
   
+  // Процент готовности = (количество текущих отчётов / общее количество) × 100%
+  const currentReportsCount = cell.reports.filter(r => r.type === 'current').length
+  const readinessPercent = cell.totalReports > 0 
+    ? Math.round((currentReportsCount / cell.totalReports) * 100) 
+    : 0
+  
+  // Цвет бейджа готовности
+  const getReadinessColor = (percent: number) => {
+    if (percent < 40) return 'bg-red-100 text-red-800 border-red-300'
+    if (percent < 70) return 'bg-yellow-100 text-yellow-800 border-yellow-300'
+    return 'bg-green-100 text-green-800 border-green-300'
+  }
+  
   return (
     <div
       className="bg-white border border-gray-200 rounded-lg p-3 cursor-pointer hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 relative group ring-1 ring-transparent hover:ring-blue-200 animate-fade-in-up h-full flex flex-col min-h-[120px]"
@@ -50,8 +63,8 @@ export default function MatrixCell({ cell, onClick, animationDelay = 0 }: Matrix
       }}
       onClick={onClick}
     >
-      {/* Question badges - отступ справа для бейджей выручки/маржа. На узких экранах больше зазор */}
-      <div className="flex flex-col gap-2 mb-2 flex-grow min-h-0 pr-20 md:pr-[7.5rem]">
+      {/* Question badges - min-h на 3 вопроса (эталон), отступ справа для бейджей выручки/маржа/готовность */}
+      <div className="flex flex-col gap-2 mb-2 flex-grow pr-20 md:pr-[7.5rem] pl-3 min-h-[6.5rem]">
         {(cell.questions || []).map((q, idx) => (
           <span
             key={idx}
@@ -63,8 +76,8 @@ export default function MatrixCell({ cell, onClick, animationDelay = 0 }: Matrix
         ))}
       </div>
 
-      {/* Impact badges - right side, aligned with AI icon. На узких экранах только цифры */}
-      <div className="absolute top-3 right-3 flex flex-col gap-1 items-end">
+      {/* Impact badges + readiness - right side, aligned with AI icon. gap-2 как у бейджей вопросов */}
+      <div className="absolute top-3 right-3 flex flex-col gap-2 items-end z-10">
         <span className="inline-flex items-center text-xs px-2 py-0.5 bg-emerald-50 text-emerald-800 rounded border border-emerald-200 whitespace-nowrap">
           <span className="hidden md:inline">Выручка: </span>
           {impact.revenue} млн
@@ -72,6 +85,9 @@ export default function MatrixCell({ cell, onClick, animationDelay = 0 }: Matrix
         <span className="inline-flex items-center text-xs px-2 py-0.5 bg-blue-50 text-blue-800 rounded border border-blue-200 whitespace-nowrap">
           <span className="hidden md:inline">Маржа: </span>
           {impact.margin} млн
+        </span>
+        <span className={`inline-flex items-center text-xs px-2 py-1 rounded-md border font-semibold ${getReadinessColor(readinessPercent)}`}>
+          {readinessPercent}%
         </span>
       </div>
       

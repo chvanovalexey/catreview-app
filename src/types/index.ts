@@ -11,8 +11,16 @@ export interface Task {
   status: 'Новая' | 'В работе' | 'Выполнена' | 'Просрочена'
   revenue_impact_million: number
   margin_impact_million: number
-  due_date: string
   created_date: string
+  // Поля жизненного цикла инициативы
+  start_date: string // Дата начала работы над инициативой
+  impact_start_date?: string // Дата начала проявления эффекта
+  impact_check_date?: string // Дата проверки достижения импакта
+  // Ответственный (ФИО или отдел)
+  assignee?: string
+  // Иерархия инициатив
+  parent_id?: number // Ссылка на родительскую инициативу
+  sku_details?: string // Детализация по SKU
 }
 
 export interface ChatExample {
@@ -30,6 +38,7 @@ export interface Report {
   title: string
   type: 'current' | 'new'
   description?: string
+  isMandatory?: boolean // Обязательный отчёт для просмотра
 }
 
 export interface MatrixCell {

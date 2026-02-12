@@ -23,15 +23,19 @@ export default function ProgressTracker() {
     navigate(`/preparation/step/${id}`)
   }
 
+  const { allInitiatives } = usePreparationStore()
   const totalRevenue = getTotalRevenue()
   const totalMargin = getTotalMargin()
+  const totalInitiativeCount = allInitiatives.length
 
   return (
     <div className="w-full md:w-64 flex-shrink-0 border-r border-gray-200 bg-white p-4 flex flex-col md:border-b-0 border-b">
       <h3 className="text-sm font-semibold text-gray-900 mb-2">Прогресс</h3>
 
       <div className="mb-4 pb-4 border-b border-gray-200">
-        <p className="text-xs text-gray-600 mb-2">Всего инициатив</p>
+        <p className="text-xs text-gray-600 mb-2">
+          Всего амбиций: <span className="font-semibold text-gray-900">{totalInitiativeCount}</span>
+        </p>
         <ImpactBadges revenue={totalRevenue} margin={totalMargin} variant="compact" size="sm" />
       </div>
 
@@ -98,7 +102,14 @@ export default function ProgressTracker() {
             >
               <StatusIcon />
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-gray-900 break-words">{config.name}</p>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <p className="text-xs font-medium text-gray-900 break-words">{config.name}</p>
+                  {(stepState?.initiativesAdded?.length ?? 0) > 0 && (
+                    <span className="text-[10px] px-1.5 py-0.5 bg-green-100 text-green-800 rounded whitespace-nowrap">
+                      {stepState!.initiativesAdded.length} амб.
+                    </span>
+                  )}
+                </div>
                 {(revenue > 0 || margin > 0) && (
                   <div className="mt-1 flex flex-wrap gap-1">
                     <ImpactBadges revenue={revenue} margin={margin} size="sm" />

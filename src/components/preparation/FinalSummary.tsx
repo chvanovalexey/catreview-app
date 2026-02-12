@@ -48,7 +48,7 @@ export default function FinalSummary() {
           <p className="font-semibold text-gray-900">{formatShortDate(completionDate)}</p>
         </div>
         <div className="bg-white rounded-lg p-4 border border-gray-200">
-          <p className="text-xs text-gray-600 mb-2">Сумма инициатив</p>
+          <p className="text-xs text-gray-600 mb-2">Сумма амбиций</p>
           <ImpactBadges revenue={totalRevenue} margin={totalMargin} variant="compact" size="lg" />
         </div>
       </div>

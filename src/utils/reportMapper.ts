@@ -58,6 +58,18 @@ export const reportNames: Record<string, string> = {
   'NEW-REP-24': 'OSA (On Shelf Availability)',
   'NEW-REP-25': 'Back Margin Report',
   'NEW-REP-26': 'Service Level',
+  
+  // СТМ reports
+  'NEW-REP-27': 'СТМ: Доля и динамика',
+  'NEW-REP-28': 'СТМ: Ценообразование vs бренды',
+  'NEW-REP-29': 'СТМ: Сравнение с конкурентами',
+  
+  // E-commerce reports
+  'NEW-REP-30': 'Доля e-com в продажах категории',
+  'NEW-REP-31': 'Динамика онлайн vs офлайн',
+  'NEW-REP-32': 'Модель потребления в e-com',
+  'NEW-REP-33': 'Ценообразование в e-com vs офлайн',
+  'NEW-REP-34': 'Ассортимент e-com: уникальность и пересечения',
 }
 
 const COL = MATRIX_COLUMNS
@@ -97,7 +109,7 @@ const reportMapping: Record<string, { current: string[], new: string[] }> = {
   // === Ассортимент (Ядро категории) ===
   [`Ассортимент_${COL[0]}`]: {
     current: ['REP-01', 'REP-02', 'REP-03'],
-    new: ['NEW-REP-19', 'NEW-REP-20', 'NEW-REP-21']
+    new: ['NEW-REP-19', 'NEW-REP-20', 'NEW-REP-21', 'NEW-REP-27']
   },
   [`Ассортимент_${COL[1]}`]: {
     current: ['REP-04', 'REP-14'],
@@ -105,7 +117,7 @@ const reportMapping: Record<string, { current: string[], new: string[] }> = {
   },
   [`Ассортимент_${COL[2]}`]: {
     current: ['REP-08', 'REP-09', 'REP-10', 'REP-11', 'REP-13', 'REP-06', 'REP-19'],
-    new: ['NEW-REP-11', 'NEW-REP-13']
+    new: ['NEW-REP-11', 'NEW-REP-13', 'NEW-REP-29']
   },
 
   // === Цена и Промо (Восприятие ценности) ===
@@ -115,11 +127,11 @@ const reportMapping: Record<string, { current: string[], new: string[] }> = {
   },
   [`Цена и Промо_${COL[1]}`]: {
     current: ['REP-04'],
-    new: ['NEW-REP-04', 'NEW-REP-05']
+    new: ['NEW-REP-04', 'NEW-REP-05', 'NEW-REP-28']
   },
   [`Цена и Промо_${COL[2]}`]: {
     current: ['REP-05', 'REP-20'],
-    new: ['NEW-REP-14', 'NEW-REP-15']
+    new: ['NEW-REP-14', 'NEW-REP-15', 'NEW-REP-29']
   },
 
   // === Полка (Merch) — Выкладка + OSA ===
@@ -133,13 +145,13 @@ const reportMapping: Record<string, { current: string[], new: string[] }> = {
   },
   [`Полка (Merch)_${COL[2]}`]: {
     current: [],
-    new: ['NEW-REP-16', 'NEW-REP-17']
+    new: ['NEW-REP-16', 'NEW-REP-17', 'NEW-REP-29']
   },
 
   // === Бренды и Поставщики (Закупка) ===
   [`Бренды и Поставщики_${COL[0]}`]: {
     current: ['REP-12', 'REP-18'],
-    new: ['NEW-REP-25', 'NEW-REP-26']
+    new: ['NEW-REP-25', 'NEW-REP-26', 'NEW-REP-27']
   },
   [`Бренды и Поставщики_${COL[1]}`]: {
     current: [],
@@ -147,8 +159,28 @@ const reportMapping: Record<string, { current: string[], new: string[] }> = {
   },
   [`Бренды и Поставщики_${COL[2]}`]: {
     current: ['REP-12'],
-    new: ['NEW-REP-12', 'NEW-REP-18']
+    new: ['NEW-REP-12', 'NEW-REP-18', 'NEW-REP-29']
   }
+}
+
+// Обязательные отчёты (Must Have) для каждой ячейки матрицы
+// 2-3 ключевых отчёта, которые нужно обязательно просмотреть
+const mandatoryReports: Record<string, string[]> = {
+  [`Ассортимент_${COL[0]}`]: ['REP-01', 'REP-02', 'NEW-REP-19'],
+  [`Ассортимент_${COL[1]}`]: ['REP-04', 'NEW-REP-01', 'NEW-REP-03'],
+  [`Ассортимент_${COL[2]}`]: ['REP-08', 'REP-13', 'REP-19'],
+  
+  [`Цена и Промо_${COL[0]}`]: ['REP-16', 'NEW-REP-22'],
+  [`Цена и Промо_${COL[1]}`]: ['NEW-REP-04', 'NEW-REP-05'],
+  [`Цена и Промо_${COL[2]}`]: ['REP-20', 'NEW-REP-14'],
+  
+  [`Полка (Merch)_${COL[0]}`]: ['REP-17', 'NEW-REP-23'],
+  [`Полка (Merch)_${COL[1]}`]: ['NEW-REP-06', 'NEW-REP-08'],
+  [`Полка (Merch)_${COL[2]}`]: ['NEW-REP-16', 'NEW-REP-17'],
+  
+  [`Бренды и Поставщики_${COL[0]}`]: ['REP-12', 'REP-18'],
+  [`Бренды и Поставщики_${COL[1]}`]: ['NEW-REP-10'],
+  [`Бренды и Поставщики_${COL[2]}`]: ['REP-12', 'NEW-REP-12'],
 }
 
 // Вопросы, на которые категорийный менеджер может ответить с помощью отчётов в ячейке
@@ -215,12 +247,13 @@ const cellQuestions: Record<string, string[]> = {
   ]
 }
 
-export function createReportsFromIds(ids: string[], type: 'current' | 'new'): Report[] {
+export function createReportsFromIds(ids: string[], type: 'current' | 'new', mandatoryIds: string[] = []): Report[] {
   return ids.map(id => ({
     id,
     title: reportNames[id] || id,
     type,
-    description: `${type === 'current' ? 'Текущий' : 'Новый'} отчёт ${id}`
+    description: `${type === 'current' ? 'Текущий' : 'Новый'} отчёт ${id}`,
+    isMandatory: mandatoryIds.includes(id)
   }))
 }
 
@@ -248,8 +281,9 @@ export function getMatrixCell(row: string, column: string): MatrixCell | null {
   
   if (!mapping) return null
   
-  const currentReports = createReportsFromIds(mapping.current, 'current')
-  const newReports = createReportsFromIds(mapping.new, 'new')
+  const mandatoryForCell = mandatoryReports[key] || []
+  const currentReports = createReportsFromIds(mapping.current, 'current', mandatoryForCell)
+  const newReports = createReportsFromIds(mapping.new, 'new', mandatoryForCell)
   const allReports = [...currentReports, ...newReports]
   
   const totalReports = allReports.length
@@ -305,12 +339,19 @@ export function findCellByReportId(reportId: string | null | undefined): MatrixC
   return null
 }
 
+// E-commerce report IDs (step 4)
+const ECOM_REPORT_IDS = ['NEW-REP-30', 'NEW-REP-31', 'NEW-REP-32', 'NEW-REP-33', 'NEW-REP-34']
+
 /**
- * Returns preparation step Id (1, 2, or 3) for a report based on which column it belongs to.
- * Step 1 = Health, Step 2 = Shopper, Step 3 = External. Returns first match.
+ * Returns preparation step Id for a report based on which column/section it belongs to.
+ * Step 1 = Health, Step 2 = Shopper, Step 3 = External, Step 4 = e-com. Returns first match.
  */
 export function getStepIdForReportId(reportId: string | null | undefined): number | null {
   if (!reportId) return null
+
+  // E-com reports → step 4
+  if (ECOM_REPORT_IDS.includes(reportId)) return 4
+
   for (let i = 0; i < COL.length; i++) {
     for (const [cellKey, mapping] of Object.entries(reportMapping)) {
       if (cellKey.endsWith(COL[i]) && (mapping.current.includes(reportId) || mapping.new.includes(reportId))) {

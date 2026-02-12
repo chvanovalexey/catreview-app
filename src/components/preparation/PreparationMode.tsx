@@ -10,11 +10,7 @@ import type { Task } from '../../types'
 export default function PreparationMode() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { loadFromLocalStorage, seedFromTasks, allInitiatives } = usePreparationStore()
-
-  useEffect(() => {
-    loadFromLocalStorage()
-  }, [loadFromLocalStorage])
+  const { seedFromTasks, allInitiatives } = usePreparationStore()
 
   useEffect(() => {
     if (allInitiatives.length === 0) {

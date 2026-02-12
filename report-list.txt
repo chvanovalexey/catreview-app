@@ -33,11 +33,26 @@
 Экономика	Поставщики	REP-12: ТОП-20 производителей.	NEW-REP-25: Back Margin Report (Детальный анализ бонусов и компенсаций от поставщиков).
 Экономика	Поставщики	REP-18: Аналитика СТМ.	NEW-REP-26: Service Level (Уровень недопоставок от поставщиков).
 
+НОВЫЕ ОТЧЁТЫ - СТМ (Собственные торговые марки):
+СТМ	Ассортимент		NEW-REP-27: СТМ: Доля и динамика (Динамика доли СТМ в продажах, маржинальность СТМ).
+СТМ	Цена/Промо		NEW-REP-28: СТМ: Ценообразование vs бренды (Сравнение цен СТМ с брендами, эластичность).
+СТМ	Конкуренция		NEW-REP-29: СТМ: Сравнение с конкурентами (Доля СТМ у конкурентов, ценовое позиционирование).
+
+НОВЫЕ ОТЧЁТЫ - e-com (Электронная коммерция):
+e-com	Ассортимент		NEW-REP-30: Доля e-com в продажах категории (Динамика онлайн vs офлайн).
+e-com	Ассортимент		NEW-REP-31: Динамика онлайн vs офлайн (Сравнение роста каналов).
+e-com	Покупатель		NEW-REP-32: Модель потребления в e-com (Отличия покупательского поведения онлайн).
+e-com	Цена/Промо		NEW-REP-33: Ценообразование в e-com vs офлайн (Сравнение цен и эффективности промо).
+e-com	Ассортимент		NEW-REP-34: Ассортимент e-com: уникальность и пересечения (Эксклюзивный онлайн-ассортимент).
+
 
 ---
 НОВАЯ СТРУКТУРА МАТРИЦЫ (TO-BE) - Рычаги x Super-logic (3 столбца)
 Рычаг (Lever) | 1. Здоровье (Internal) | 2. Потребности (Shopper) | 3. Разрывы (External)
-Ассортимент | REP-01, REP-02, REP-03, NEW-REP-19, NEW-REP-20, NEW-REP-21 | REP-04, REP-14, NEW-REP-01, NEW-REP-02, NEW-REP-03 | REP-08, REP-09, REP-10, REP-11, REP-13, REP-06, REP-19, NEW-REP-11, NEW-REP-13
-Цена и Промо | REP-16, REP-15, NEW-REP-22 | REP-04, NEW-REP-04, NEW-REP-05 | REP-05, REP-20, NEW-REP-14, NEW-REP-15
-Полка (Merch) | REP-17, NEW-REP-23, NEW-REP-24 | NEW-REP-06, NEW-REP-07, NEW-REP-08, NEW-REP-09 | NEW-REP-16, NEW-REP-17
-Поставщики | REP-12, REP-18, NEW-REP-25, NEW-REP-26 | NEW-REP-10 | REP-12, NEW-REP-12, NEW-REP-18
+Ассортимент | REP-01, REP-02, REP-03, NEW-REP-19, NEW-REP-20, NEW-REP-21, NEW-REP-27 | REP-04, REP-14, NEW-REP-01, NEW-REP-02, NEW-REP-03 | REP-08, REP-09, REP-10, REP-11, REP-13, REP-06, REP-19, NEW-REP-11, NEW-REP-13, NEW-REP-29
+Цена и Промо | REP-16, REP-15, NEW-REP-22 | REP-04, NEW-REP-04, NEW-REP-05, NEW-REP-28 | REP-05, REP-20, NEW-REP-14, NEW-REP-15, NEW-REP-29
+Полка (Merch) | REP-17, NEW-REP-23, NEW-REP-24 | NEW-REP-06, NEW-REP-07, NEW-REP-08, NEW-REP-09 | NEW-REP-16, NEW-REP-17, NEW-REP-29
+Поставщики | REP-12, REP-18, NEW-REP-25, NEW-REP-26 | NEW-REP-10 | REP-12, NEW-REP-12, NEW-REP-18, NEW-REP-29
+
+Отдельный шаг - e-com (Электронная коммерция):
+Шаг 4: e-com | NEW-REP-30, NEW-REP-31, NEW-REP-34 | NEW-REP-32 | NEW-REP-33

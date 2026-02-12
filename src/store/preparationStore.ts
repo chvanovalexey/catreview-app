@@ -11,8 +11,6 @@ import { PREPARATION_STEPS } from '../types/preparation'
 import { MATRIX_ROWS } from '../utils/reportMapper'
 import { getMatrixCell, getStepIdForReportId } from '../utils/reportMapper'
 
-const STORAGE_KEY = 'catreview_preparation_state'
-
 function getDefaultStepState(config: PreparationStepConfig): PreparationStepState {
   const leverStates: Record<string, LeverStatus> = {}
   const trafficLights: Record<string, TrafficLight> = {}
@@ -53,56 +51,6 @@ function todayISO(): string {
   return new Date().toISOString().split('T')[0]
 }
 
-interface PersistedState {
-  steps: PreparationStepState[]
-  currentStepId: number
-  startDate: string
-  allInitiatives: Task[]
-  nextInitiativeId: number
-  initiativeStepMap: Record<number, number> // taskId -> stepId
-}
-
-function ensureStepStructure(step: PreparationStepState): PreparationStepState {
-  const config = PREPARATION_STEPS.find((c) => c.id === step.id)
-  if (!config?.columnKey || config.type !== 'analysis') return step
-
-  const leverStates = { ...step.leverStates }
-  const trafficLights = { ...step.trafficLights }
-  const insights = { ...step.insights }
-
-  for (const row of MATRIX_ROWS) {
-    const cell = getMatrixCell(row, config.columnKey)
-    if (cell) {
-      if (leverStates[row] == null) leverStates[row] = 'not_viewed'
-      if (trafficLights[row] === undefined) trafficLights[row] = null
-      if (insights[row] == null) insights[row] = ''
-    }
-  }
-
-  return {
-    ...step,
-    leverStates,
-    trafficLights,
-    insights,
-  }
-}
-
-function loadPersisted(): PersistedState | null {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return null
-    const parsed = JSON.parse(raw) as PersistedState
-    if (!parsed.steps || !Array.isArray(parsed.steps)) return null
-    return {
-      ...parsed,
-      initiativeStepMap: parsed.initiativeStepMap ?? {},
-      steps: parsed.steps.map(ensureStepStructure),
-    }
-  } catch {
-    return null
-  }
-}
-
 interface PreparationState {
   steps: PreparationStepState[]
   currentStepId: number
@@ -124,8 +72,6 @@ interface PreparationState {
   canProceedToStep: (stepId: number) => boolean
   resetPreparation: () => void
 
-  saveToLocalStorage: () => void
-  loadFromLocalStorage: () => void
   seedFromTasks: (tasks: Task[]) => void
   getStepById: (id: number) => PreparationStepState | undefined
   getInitiativesForStep: (stepId: number) => Task[]
@@ -158,22 +104,13 @@ function recalcStepTotals(
 }
 
 export const usePreparationStore = create<PreparationState>((set, get) => {
-  const persisted = loadPersisted()
-
-  const initialSteps = persisted?.steps ?? createInitialSteps()
-  const initialInitiatives = persisted?.allInitiatives ?? []
-  const nextId =
-    persisted?.nextInitiativeId ??
-    Math.max(1000, ...initialInitiatives.map((t) => t.id), 0) + 1
-  const initialStepMap = persisted?.initiativeStepMap ?? {}
-
   return {
-    steps: initialSteps,
-    currentStepId: persisted?.currentStepId ?? 1,
-    startDate: persisted?.startDate ?? todayISO(),
-    allInitiatives: initialInitiatives,
-    nextInitiativeId: nextId,
-    initiativeStepMap: initialStepMap,
+    steps: createInitialSteps(),
+    currentStepId: 1,
+    startDate: todayISO(),
+    allInitiatives: [],
+    nextInitiativeId: 1000,
+    initiativeStepMap: {},
 
     setCurrentStep: (id) => {
       set((state) => {
@@ -186,7 +123,6 @@ export const usePreparationStore = create<PreparationState>((set, get) => {
         )
         return { currentStepId: id, steps }
       })
-      get().saveToLocalStorage()
     },
 
     markLeverViewed: (stepId, lever) => {
@@ -202,7 +138,6 @@ export const usePreparationStore = create<PreparationState>((set, get) => {
         })
         return { steps }
       })
-      get().saveToLocalStorage()
     },
 
     setLeverTrafficLight: (stepId, lever, light) => {
@@ -213,7 +148,6 @@ export const usePreparationStore = create<PreparationState>((set, get) => {
         })
         return { steps }
       })
-      get().saveToLocalStorage()
     },
 
     setLeverInsights: (stepId, lever, insights) => {
@@ -224,7 +158,6 @@ export const usePreparationStore = create<PreparationState>((set, get) => {
         })
         return { steps }
       })
-      get().saveToLocalStorage()
     },
 
     addInitiative: (stepId, taskInput) => {
@@ -237,8 +170,13 @@ export const usePreparationStore = create<PreparationState>((set, get) => {
         status: taskInput.status,
         revenue_impact_million: taskInput.revenue_impact_million,
         margin_impact_million: taskInput.margin_impact_million,
-        due_date: taskInput.due_date,
         created_date: taskInput.created_date ?? created,
+        start_date: taskInput.start_date,
+        impact_start_date: taskInput.impact_start_date,
+        impact_check_date: taskInput.impact_check_date,
+        assignee: taskInput.assignee,
+        parent_id: taskInput.parent_id,
+        sku_details: taskInput.sku_details,
       }
 
       set((state) => {
@@ -265,22 +203,27 @@ export const usePreparationStore = create<PreparationState>((set, get) => {
           steps,
         }
       })
-      get().saveToLocalStorage()
       return id
     },
 
     removeInitiative: (taskId) => {
       set((state) => {
-        const allInitiatives = state.allInitiatives.filter((t) => t.id !== taskId)
-        const { [taskId]: _, ...initiativeStepMap } = state.initiativeStepMap
+        // Cascade: also remove child tasks (subtasks)
+        const childIds = state.allInitiatives
+          .filter((t) => t.parent_id === taskId)
+          .map((t) => t.id)
+        const idsToRemove = new Set([taskId, ...childIds])
+
+        const allInitiatives = state.allInitiatives.filter((t) => !idsToRemove.has(t.id))
+        const initiativeStepMap = { ...state.initiativeStepMap }
+        idsToRemove.forEach((id) => delete initiativeStepMap[id])
         const steps = state.steps.map((s) => ({
           ...s,
-          initiativesAdded: s.initiativesAdded.filter((id) => id !== taskId),
+          initiativesAdded: s.initiativesAdded.filter((id) => !idsToRemove.has(id)),
         }))
         const recalc = recalcStepTotals(steps, allInitiatives, initiativeStepMap)
         return { allInitiatives, initiativeStepMap, steps: recalc }
       })
-      get().saveToLocalStorage()
     },
 
     updateInitiative: (taskId, updates) => {
@@ -296,7 +239,6 @@ export const usePreparationStore = create<PreparationState>((set, get) => {
         const steps = recalcStepTotals(state.steps, allInitiatives, initiativeStepMap)
         return { allInitiatives, initiativeStepMap, steps }
       })
-      get().saveToLocalStorage()
     },
 
     setInitiativeStep: (taskId, stepId) => {
@@ -316,7 +258,6 @@ export const usePreparationStore = create<PreparationState>((set, get) => {
         )
         return { steps }
       })
-      get().saveToLocalStorage()
     },
 
     skipStep: (stepId) => {
@@ -332,7 +273,6 @@ export const usePreparationStore = create<PreparationState>((set, get) => {
         )
         return { steps }
       })
-      get().saveToLocalStorage()
     },
 
     canProceedToStep: (stepId) => {
@@ -360,8 +300,9 @@ export const usePreparationStore = create<PreparationState>((set, get) => {
         }
       }
 
-      if (currentStepId === 4) return true
-      if (currentStepId === 5) return true
+      if (currentStepId === 4) return true // e-com
+      if (currentStepId === 5) return true // Детализация до SKU
+      if (currentStepId === 6) return true // Амбиции и приоритизация
 
       return true
     },
@@ -375,57 +316,63 @@ export const usePreparationStore = create<PreparationState>((set, get) => {
         nextInitiativeId: 1000,
         initiativeStepMap: {},
       })
-      get().saveToLocalStorage()
-    },
-
-    saveToLocalStorage: () => {
-      try {
-        const state = get()
-        const toSave: PersistedState = {
-          steps: state.steps,
-          currentStepId: state.currentStepId,
-          startDate: state.startDate,
-          allInitiatives: state.allInitiatives,
-          nextInitiativeId: state.nextInitiativeId,
-          initiativeStepMap: state.initiativeStepMap,
-        }
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave))
-      } catch {
-        // ignore
-      }
-    },
-
-    loadFromLocalStorage: () => {
-      const persisted = loadPersisted()
-      if (persisted) {
-        const initiativeStepMap = { ...(persisted.initiativeStepMap ?? {}) }
-        const allInitiatives = persisted.allInitiatives
-        const allOnStep1 = allInitiatives.length > 0 && allInitiatives.every((t) => initiativeStepMap[t.id] === 1)
-        if (allOnStep1) {
-          allInitiatives.forEach((t) => {
-            const stepId = getStepIdForReportId(t.report_id)
-            if (stepId) initiativeStepMap[t.id] = stepId
-          })
-        }
-        const steps = recalcStepTotals(
-          persisted.steps,
-          allInitiatives,
-          initiativeStepMap
-        )
-        set({
-          steps,
-          currentStepId: persisted.currentStepId,
-          startDate: persisted.startDate,
-          allInitiatives,
-          nextInitiativeId: persisted.nextInitiativeId,
-          initiativeStepMap,
-        })
-      }
     },
 
     seedFromTasks: (tasks) => {
       const state = get()
-      if (state.allInitiatives.length > 0) return
+
+      if (state.allInitiatives.length > 0) {
+        // Уже есть инициативы — обновляем недостающие поля из tasks.json
+        const seedMap = new Map(tasks.map((t) => [t.id, t]))
+        const existingIds = new Set(state.allInitiatives.map((t) => t.id))
+        let updated = false
+        const allInitiatives = state.allInitiatives.map((existing) => {
+          const seed = seedMap.get(existing.id)
+          if (!seed) return existing
+          // Если у сохранённой инициативы нет новых полей — подтягиваем из tasks.json
+          const needsUpdate =
+            !existing.assignee ||
+            !existing.start_date ||
+            !existing.impact_start_date ||
+            !existing.impact_check_date
+          if (needsUpdate) {
+            updated = true
+            return {
+              ...existing,
+              assignee: existing.assignee || seed.assignee,
+              start_date: existing.start_date || seed.start_date,
+              impact_start_date: existing.impact_start_date || seed.impact_start_date,
+              impact_check_date: existing.impact_check_date || seed.impact_check_date,
+              sku_details: existing.sku_details || seed.sku_details,
+            }
+          }
+          return existing
+        })
+
+        // Add any new tasks from tasks.json that are missing (e.g. subtasks)
+        const newTasks = tasks.filter((t) => !existingIds.has(t.id))
+        const newInitiativeStepMap = { ...state.initiativeStepMap }
+        if (newTasks.length > 0) {
+          updated = true
+          newTasks.forEach((t) => {
+            allInitiatives.push(t)
+            const stepId = getStepIdForReportId(t.report_id)
+            newInitiativeStepMap[t.id] = stepId ?? 1
+          })
+        }
+
+        if (updated) {
+          const steps = recalcStepTotals(state.steps, allInitiatives, newInitiativeStepMap)
+          set({
+            allInitiatives,
+            initiativeStepMap: newInitiativeStepMap,
+            steps,
+            nextInitiativeId: Math.max(state.nextInitiativeId, ...allInitiatives.map((t) => t.id), 0) + 1,
+          })
+        }
+        return
+      }
+
       const initiativeStepMap: Record<number, number> = {}
       tasks.forEach((t) => {
         const stepId = getStepIdForReportId(t.report_id)
@@ -439,7 +386,6 @@ export const usePreparationStore = create<PreparationState>((set, get) => {
         nextInitiativeId: Math.max(1000, ...tasks.map((t) => t.id), 0) + 1,
         steps,
       })
-      get().saveToLocalStorage()
     },
 
     getStepById: (id) => get().steps.find((s) => s.id === id),

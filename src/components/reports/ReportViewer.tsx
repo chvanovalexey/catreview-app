@@ -174,7 +174,7 @@ export default function ReportViewer() {
                     >
                       <div className="flex items-center justify-center gap-2">
                         <CheckSquare className="w-4 h-4" />
-                        Задачи ({tasks.length})
+                        Амбиции ({tasks.length})
                       </div>
                     </button>
                   </div>
@@ -183,7 +183,7 @@ export default function ReportViewer() {
                     className="flex items-center gap-2 px-4 py-2 mx-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                   >
                     <Plus className="w-4 h-4" />
-                    Добавить инициативу
+                    Добавить амбицию
                   </button>
                 </div>
               </div>
@@ -208,7 +208,7 @@ export default function ReportViewer() {
             status: 'Новая',
             revenue_impact_million: 0,
             margin_impact_million: 0,
-            due_date: new Date().toISOString().split('T')[0],
+            start_date: new Date().toISOString().split('T')[0],
             created_date: new Date().toISOString().split('T')[0],
           }}
           onSave={(taskData) => {

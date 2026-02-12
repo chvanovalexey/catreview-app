@@ -37,6 +37,33 @@ export default function MainMatrix() {
   const { selectedCell, setSelectedCell } = useAppStore()
   const navigate = useNavigate()
 
+  // Рассчитываем общий процент готовности матрицы
+  const calculateOverallReadiness = () => {
+    let totalReadiness = 0
+    let cellCount = 0
+    
+    rows.forEach(row => {
+      columns.forEach(col => {
+        const cell = getCell(row, col)
+        if (cell && cell.totalReports > 0) {
+          const currentReportsCount = cell.reports.filter(r => r.type === 'current').length
+          const readiness = (currentReportsCount / cell.totalReports) * 100
+          totalReadiness += readiness
+          cellCount++
+        }
+      })
+    })
+    
+    return cellCount > 0 ? Math.round(totalReadiness / cellCount) : 0
+  }
+  
+  const overallReadiness = calculateOverallReadiness()
+  const getReadinessColor = (percent: number) => {
+    if (percent < 40) return 'bg-red-100 text-red-800 border-red-300'
+    if (percent < 70) return 'bg-yellow-100 text-yellow-800 border-yellow-300'
+    return 'bg-green-100 text-green-800 border-green-300'
+  }
+
   const handleCellClick = (row: string, column: string) => {
     const cell = getCell(row, column)
     if (cell) {
@@ -64,9 +91,17 @@ export default function MainMatrix() {
               <img src="/logo/dixy.svg" alt="Дикси" className="h-8 w-auto" />
               <img src="/logo/glowbyte.svg" alt="Глоубайт" className="h-8 w-auto" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 text-center hidden sm:block flex-shrink-0">
-              Category Review
-            </h1>
+            <div className="flex items-center gap-3 hidden sm:flex flex-shrink-0">
+              <h1 className="text-2xl font-bold text-gray-900 whitespace-nowrap">
+                Category Review
+              </h1>
+              <div className="flex items-center gap-2 whitespace-nowrap">
+                <span className="text-xs text-gray-600">Готовность отчётов:</span>
+                <span className={`inline-flex items-center text-xs px-3 py-1 rounded-md border font-semibold ${getReadinessColor(overallReadiness)}`}>
+                  {overallReadiness}%
+                </span>
+              </div>
+            </div>
             <div className="flex items-center justify-end gap-2 flex-1 sm:flex-initial min-w-0">
               <button
                 onClick={() => navigate('/')}
