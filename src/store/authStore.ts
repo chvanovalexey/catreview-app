@@ -13,16 +13,24 @@ if (!CORRECT_PASSWORD) {
   throw new Error('VITE_APP_PASSWORD не установлен в переменных окружения')
 }
 
+const STORAGE_KEY = 'catreview_auth_password'
+
+// Проверяем сохранённый пароль при загрузке
+const savedPassword = localStorage.getItem(STORAGE_KEY)
+const isAlreadyAuthenticated = savedPassword === CORRECT_PASSWORD
+
 export const useAuthStore = create<AuthState>((set) => ({
-  isAuthenticated: false,
+  isAuthenticated: isAlreadyAuthenticated,
   login: (password: string) => {
     if (password === CORRECT_PASSWORD) {
+      localStorage.setItem(STORAGE_KEY, password)
       set({ isAuthenticated: true })
       return true
     }
     return false
   },
   logout: () => {
+    localStorage.removeItem(STORAGE_KEY)
     set({ isAuthenticated: false })
   },
 }))
